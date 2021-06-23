@@ -22,6 +22,11 @@ class Scene8 extends Phaser.Scene {
         this.load.audio('salto', 'assets/Sonido/salto.wav');
         this.load.audio('musica','assets/Sonido/musica.mp3');
         this.load.image('Dead', 'assets/sprites/Dead.png');
+        this.load.image('enemigo1', 'assets/enemigo1abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('enemigo2', 'assets/enemigo2abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('enemigo3', 'assets/enemigo3abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('enemigo4', 'assets/enemigo4abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('enemigo5', 'assets/enemigo5abajo.png', { frameWidth: 32, frameHeight: 48 }); 
     }
     create() {
         var mapaa;
@@ -36,7 +41,11 @@ class Scene8 extends Phaser.Scene {
         //var nivelcompleto;
         //var musica; 
         //var salto;
-        
+        var enemigo1;
+        var enemigo2;
+        var enemigo3;
+        var enemigo4;
+        var enemigo5;
         
         Dead = this.add.image('Dead');
         coin = this.sound.add('coin');
@@ -70,6 +79,21 @@ class Scene8 extends Phaser.Scene {
         izquierda = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
+        enemigo1 = this.physics.add.sprite(900, 890, 'enemigo1');
+        enemigo1.setScale(0.5); 
+
+        enemigo2 = this.physics.add.sprite(1050, 890, 'enemigo2');
+        enemigo2.setScale(0.5); 
+
+        enemigo3 = this.physics.add.sprite(1850, 890, 'enemigo3');
+        enemigo3.setScale(0.5); 
+
+        enemigo4 = this.physics.add.sprite(2400, 890, 'enemigo4');
+        enemigo4.setScale(0.5); 
+
+        enemigo5 = this.physics.add.sprite(3750, 890, 'enemigo5');
+        enemigo5.setScale(0.5);
+
         enemigo = this.physics.add.sprite(1200, 380, 'enemigo');
         enemigo.setBounce(0.2);
         enemigo.setCollideWorldBounds(true);
@@ -88,7 +112,7 @@ class Scene8 extends Phaser.Scene {
         enemigooo.setScale(0.5); 
         enemigooo.setVelocity(Phaser.Math.Between(-200, 500), 20);
 
-        enemigoooo = this.physics.add.sprite(2500, 300, 'enemigoo');
+        enemigoooo = this.physics.add.sprite(2800, 300, 'enemigoo');
         enemigoooo.setBounce(0.2);
         enemigoooo.setCollideWorldBounds(false);
         enemigoooo.setScale(0.5); 
@@ -101,12 +125,13 @@ class Scene8 extends Phaser.Scene {
         power = this.physics.add.group({
             key: 'power',
             repeat: 1,
-            setXY: { x: 4750, y: 100, }
+            setXY: { x: 4750, y: 100,  }
+            //(power.setScale(0.5))
         });
         stars = this.physics.add.group({
             key: 'star',
-            repeat: 15,
-            setXY: { x: 200, y: 200, stepX: 495 }
+            repeat: 25,
+            setXY: { x: 200, y: 200, stepX: 400 }
          });
         stars.children.iterate(function (child) {
 
@@ -123,6 +148,11 @@ class Scene8 extends Phaser.Scene {
         this.physics.add.collider(enemigoo, solidos);
         this.physics.add.collider(enemigooo, solidos);
         this.physics.add.collider(enemigoooo, solidos);
+        this.physics.add.collider(enemigo1, solidos);
+        this.physics.add.collider(enemigo2, solidos);
+        this.physics.add.collider(enemigo3, solidos);
+        this.physics.add.collider(enemigo4, solidos);
+        this.physics.add.collider(enemigo5, solidos);
 
         this.physics.add.overlap(jugador, stars, this.collectStar, null, this);
         this.physics.add.overlap(jugador, power, this.collectpower, null, this);
@@ -130,6 +160,12 @@ class Scene8 extends Phaser.Scene {
         this.physics.add.overlap(enemigoo, jugador, this.collectenemigo, null, this);
         this.physics.add.overlap(enemigooo, jugador, this.collectenemigooo, null, this);
         this.physics.add.overlap(enemigoooo, jugador, this.collectenemigoooo, null, this);
+        this.physics.add.overlap(enemigo1, jugador, this.collectenemigo1, null, this);
+        this.physics.add.overlap(enemigo2, jugador, this.collectenemigo2, null, this);
+        this.physics.add.overlap(enemigo3, jugador, this.collectenemigo3, null, this);
+        this.physics.add.overlap(enemigo4, jugador, this.collectenemigo4, null, this);
+        this.physics.add.overlap(enemigo5, jugador, this.collectenemigo5, null, this);
+
 
         score = 0;
         gameeOver = false;
@@ -138,16 +174,16 @@ class Scene8 extends Phaser.Scene {
         initialTime = 45
 
         timedEvent = this.time.addEvent({ delay: 1000, callback: this.onSecond, callbackScope: this, loop: true });
-        timeText = this.add.text(400, 600, '', { fontSize: '32px', fill: '#FFFFFF' });
+        timeText = this.add.text(400, 600, '', { fontSize: '32px', fill: '#000000' });
         timeText.scrollFactorX = 0;
         timeText.scrollFactorY = 0;
 
-        scoreText = this.add.text(200, 600, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF' });
+        scoreText = this.add.text(200, 600, 'Score: 0', { fontSize: '32px', fill: '#000000' });
         scoreText.scrollFactorX = 0;
         scoreText.scrollFactorY = 0;
 
         
-        vidaText = this.add.text(10, 600, 'vida:' + this.vida,  { fontSize: '32px', fill: '#FFFFFF' }); 
+        vidaText = this.add.text(10, 600, 'vida:' + this.vida,  { fontSize: '32px', fill: '#000000' }); 
         vidaText.scrollFactorX = 0; 
         vidaText.scrollFactorY = 0;
 
@@ -219,7 +255,7 @@ class Scene8 extends Phaser.Scene {
           console.log('vida:' + this.vida)   
           vidaText.setText('vida: ' + this.vida);
           if (this.vida == 0) {
-            
+            player.disableBody(true, true);
             this.gameeOver();
             }  
     
@@ -233,7 +269,7 @@ class Scene8 extends Phaser.Scene {
           console.log('vida:' + this.vida)   
           vidaText.setText('vida: ' + this.vida);
           if (this.vida == 0) {
-            
+            player.disableBody(true, true);
             
             this.gameeOver();
             
@@ -248,6 +284,7 @@ class Scene8 extends Phaser.Scene {
           console.log('vida:' + this.vida)   
           vidaText.setText('vida: ' + this.vida);
           if (this.vida == 0) {
+            player.disableBody(true, true);
             this.gameeOver();
             } 
         }
@@ -260,11 +297,47 @@ class Scene8 extends Phaser.Scene {
           console.log('vida:' + this.vida)   
           vidaText.setText('vida: ' + this.vida);
           if (this.vida == 0) {
+            player.disableBody(true, true);
             this.gameeOver();
             }  
         }
 
-
+        collectenemigo1(enemigo1, player )
+        {
+         enemigo1.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
+        collectenemigo2(enemigo2, player )
+        {
+         enemigo2.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
+        collectenemigo3(enemigo3, player )
+        {
+         enemigo3.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
+        collectenemigo4(enemigo4, player )
+        {
+         enemigo4.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
+        collectenemigo4(enemigo4, player )
+        {
+         enemigo4.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
+        collectenemigo5(enemigo5, player )
+        {
+         enemigo5.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameeOver();
+        }
     collectpower (player, power,)
     {
       power.disableBody(true, true);
@@ -285,13 +358,16 @@ class Scene8 extends Phaser.Scene {
       }
 
     }
-    gameeOver()
+    gameeOver() 
     {
-     musica.stop();
-     this.scene.start('arafue');
+        go.play();
+        setTimeout(() => {
+        musica.stop();
+        this.scene.start('arafue')}, 1000);
     }
     ganar()
     {
+      musica.stop();
       this.scene.start('ganarr')
        nivelcompleto.play();
     }

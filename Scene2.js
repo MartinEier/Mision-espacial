@@ -12,14 +12,33 @@ class Scene2 extends Phaser.Scene {
         this.load.image('gasolina','assets/gasolina.png');
         this.load.image('gasolinaa','assets/gasolinaa.png');
         this.load.image('star', 'assets/star.png');
-        this.load.image('power', 'assets/power.png');
         this.load.image('enemigo', 'assets/enemigo.png', { frameWidth: 32, frameHeight: 48 }); 
         this.load.image('enemigoo', 'assets/enemigoo.png', { frameWidth: 32, frameHeight: 48 }); 
         this.load.image('enemigoo', 'assets/enemigooo.png', { frameWidth: 32, frameHeight: 48 });
         this.load.image('enemigoo', 'assets/enemigoooo.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.audio('coin', 'assets/Sonido/coin.wav');
+        this.load.audio('go', 'assets/Sonido/go.wav');
+        this.load.audio('golpe', 'assets/Sonido/golpe.mp3');
+        this.load.audio('nivelcompleto', 'assets/Sonido/nivelcompleto.wav');
+        this.load.audio('salto', 'assets/Sonido/salto.wav');
+        this.load.audio('musica','assets/Sonido/musica.mp3');
+        this.load.image('enemigo6', 'assets/enemigo6abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('enemigo7', 'assets/enemigo7abajo.png', { frameWidth: 32, frameHeight: 48 }); 
+        this.load.image('Dead', 'assets/sprites/Dead.png');
     }
     create() {
-        
+
+        coin = this.sound.add('coin');
+        knock = this.sound.add('golpe');
+        go = this.sound.add('go')
+        nivelcompleto = this.sound.add('nivelcompleto')
+        salto = this.sound.add('salto')
+        musica = this.sound.add('musica')
+        musica.play();
+        var setTint;
+        var enemigo6;
+        var enemigo7;
+
         var ganaste;
         var perdiste;
         game.config.backgroundColor.setTo(108, 210, 222);
@@ -48,6 +67,13 @@ class Scene2 extends Phaser.Scene {
         izquierda = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         derecha = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
+        enemigo6 = this.physics.add.sprite(2170, 400, 'enemigo6');
+        enemigo6.setScale(0.5); 
+
+        enemigo7 = this.physics.add.sprite(3150, 300, 'enemigo7');
+        enemigo7.setScale(0.5); 
+
+
         enemigo = this.physics.add.sprite(1000, 520, 'enemigo');
         enemigo.setBounce(0.2);
         enemigo.setCollideWorldBounds(true);
@@ -60,13 +86,13 @@ class Scene2 extends Phaser.Scene {
         enemigoo.setScale(0.5); 
         enemigoo.setVelocity(Phaser.Math.Between(-200, 500), 20);
 
-        enemigooo = this.physics.add.sprite(1500, 300, 'enemigoo');
+        enemigooo = this.physics.add.sprite(1600, 300, 'enemigoo');
         enemigooo.setBounce(0.2);
         enemigooo.setCollideWorldBounds(false);
         enemigooo.setScale(0.5); 
         enemigooo.setVelocity(Phaser.Math.Between(-200, 500), 20);
 
-        enemigoooo = this.physics.add.sprite(2500, 100, 'enemigoo');
+        enemigoooo = this.physics.add.sprite(2800, 100, 'enemigoo');
         enemigoooo.setBounce(0.2);
         enemigoooo.setCollideWorldBounds(false);
         enemigoooo.setScale(0.5); 
@@ -107,15 +133,17 @@ class Scene2 extends Phaser.Scene {
         this.physics.add.collider(enemigoo, solidos);
         this.physics.add.collider(enemigooo, solidos);
         this.physics.add.collider(enemigoooo, solidos);
-        this.physics.add.collider(power, solidos);
+        this.physics.add.collider(enemigo6, solidos);
+        this.physics.add.collider(enemigo7, solidos);
 
         this.physics.add.overlap(jugador, stars, this.collectStar, null, this);
         this.physics.add.overlap(jugador, gasolina, this.collectgasolina, null, this);
-        this.physics.add.overlap(jugador, power, this.collectpower, null, this);
         this.physics.add.overlap(enemigo, jugador, this.collectenemigoo, null, this);
         this.physics.add.overlap(enemigoo, jugador, this.collectenemigo, null, this);
         this.physics.add.overlap(enemigooo, jugador, this.collectenemigooo, null, this);
         this.physics.add.overlap(enemigoooo, jugador, this.collectenemigoooo, null, this);
+        this.physics.add.overlap(enemigo6, jugador, this.collectenemigo6, null, this);
+        this.physics.add.overlap(enemigo7, jugador, this.collectenemigo7, null, this);
         
         score = 0;
         gameOver = false;
@@ -125,7 +153,7 @@ class Scene2 extends Phaser.Scene {
 
         this.vida = 3;
 
-        initialTime = 40
+        initialTime = 45
       
         
         
@@ -163,6 +191,7 @@ class Scene2 extends Phaser.Scene {
 
  if(arriba.isDown && jugador.body.onFloor()){
      jugador.body.setVelocityY(alturaSalto);
+     salto.play();
  }
 
  if((izquierda.isDown || derecha.isDown) && jugador.body.onFloor()){
@@ -182,14 +211,15 @@ class Scene2 extends Phaser.Scene {
      
     }
     ganaste(){
-        
+        musica.stop();
         this.scene.start('final');
+        nivelcompleto.play();
     }
 
     collectStar (player, star, ) 
     {
       star.disableBody(true, true);
-   
+      coin.play();
        
       score += 10;   
       
@@ -211,23 +241,17 @@ class Scene2 extends Phaser.Scene {
       
        
     } 
-    collectpower (player, power,)
-    {
-      power.disableBody(true, true);
-      this.vida = this.vida + 1;
-      console.log('vida:' + this.vida)   
-      vidaText.setText('vida: ' + this.vida);
-    }
 
     collectenemigo (enemigo, player ) 
     {
       enemigo.disableBody(true, true);
-      
+      knock.play();
 
       this.vida = this.vida - 1;
       console.log('vida:' + this.vida)   
       vidaText.setText('vida: ' + this.vida);
       if (this.vida == 0) {
+        player.disableBody(true, true);
         this.gameOver()
         } 
 
@@ -235,49 +259,55 @@ class Scene2 extends Phaser.Scene {
     collectenemigoo (enemigoo, player ) 
     {
       enemigoo.disableBody(true, true);
-      
+      knock.play();
 
       this.vida = this.vida - 1;
       console.log('vida:' + this.vida)   
       vidaText.setText('vida: ' + this.vida);
       if (this.vida == 0) {
+        player.disableBody(true, true);
         this.gameOver()
         } 
     }
     collectenemigooo (enemigooo, player ) 
     {
       enemigooo.disableBody(true, true);
-      
+      knock.play();
 
       this.vida = this.vida - 1;
       console.log('vida:' + this.vida)   
       vidaText.setText('vida: ' + this.vida);
       if (this.vida == 0) {
+        player.disableBody(true, true);
         this.gameOver()
         } 
     }
     collectenemigoooo (enemigoooo, player ) 
     {
       enemigoooo.disableBody(true, true);
-      
+      knock.play();
 
       this.vida = this.vida - 1;
       console.log('vida:' + this.vida)   
       vidaText.setText('vida: ' + this.vida);
       if (this.vida == 0) {
+        player.disableBody(true, true);
         this.gameOver()
         } 
     }
+    collectenemigo6(enemigo6, player )
+        {
+         enemigo6.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameOver();
+        }
+    collectenemigo7(enemigo7, player )
+        {
+         enemigo7.disableBody(true, true);
+         player.disableBody(true, true);
+         this.gameOver();
+        }
     
-    
-   // collectenemigo (enemigo, jugador,)
- //{
-   //this.gameOver()
-  //}
-  //gameOver() 
- //{
-   // this.scene.start('perdiste');
-  //}
 
   onSecond() 
   {
@@ -292,9 +322,13 @@ class Scene2 extends Phaser.Scene {
       }
 
   }
-  gameOver()
+  gameOver() 
     {
-     this.scene.start('perdiste');
+        go.play();
+        setTimeout(() => {
+        
+        musica.stop();
+        this.scene.start('perdiste')}, 1000);
     }
     
 }
