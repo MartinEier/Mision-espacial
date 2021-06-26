@@ -1,5 +1,9 @@
-var config = {
-    type: Phaser.AUTO,
+let config = {
+    type: Phaser.WEBGL,
+    scale: {
+        mode: Phaser.Scale,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
     width: window.innerWidth,
     height: window.innerHeight,
     autoResize: true,
@@ -74,3 +78,9 @@ var Dead;
 var gameeOver;
 var pause;
 var stop;
+var enemigo1;
+var enemigo2;
+var enemigo3;
+var enemigo4;
+var enemigo5;
+var setTint;

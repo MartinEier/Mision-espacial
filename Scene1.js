@@ -19,10 +19,10 @@ class Scene1 extends Phaser.Scene {
     
     var logo = this.add.image(700, 300, 'logo').setScale(1.00)
       
-    var playButton = this.add.text(680, 400, 'Jugar', { fontFamily: 'Arial black', fontSize: 20, color: '#FF0000' })
+    var playButton = this.add.text(670, 400, 'Jugar', { fontFamily: 'Arial black', fontSize: 20, color: '#FF0000' })
    .setInteractive()
    .on('pointerdown', () => this.jugar() );
-   var playButton = this.add.text(680, 450, 'Creditos', { fontFamily: 'Arial black', fontSize: 20, color: '#FF0000' })
+   var playButton = this.add.text(655, 450, 'Creditos', { fontFamily: 'Arial black', fontSize: 20, color: '#FF0000' })
    .setInteractive()
    .on('pointerdown', () => this.Creditos() );
    }
